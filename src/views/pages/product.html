@@ -1,0 +1,47 @@
+<div class="wrapper container">
+    <a href="/create" class="btn btn-primary mb-3">Add Product</a>
+    <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Image</th>
+            <th scope="col">Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Color</th>
+            <th scope="col">Created At</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% for (var i = 0; i < products.length; i++) { %>
+                <tr>
+                    <td scope="row"><%= products[i].id %></td>
+                    <td><%= products[i].name %></td>
+                    <td>
+                        <img src="<%= products[i].image %>" alt="" style="width: 100px;">
+                    </td>
+                    <td><%= products[i].price %></td>
+                    <td><%= products[i].product %></td>
+                    <td>
+                      <div style="width: 50px; height: 50px; border-radius: 50%; background-color: <%= products[i].color %>;">
+                        
+                      </div>
+                    </td>
+                    <td><%= products[i].createdAt %></td>
+                    <td class="d-flex">
+                        <a href="/update/<%= products[i].id %>" class="btn btn-primary">Edit</a>
+                        <button class="btn btn-danger ml-2" id="<%= products[i].id %>" onclick=deleteProduct(this.id)>Delete</button>
+                    </td>
+                  </tr>
+                <% } %>
+    
+        </tbody>
+      </table>
+</div>
+
+<script>
+    function deleteProduct(id) {
+        callDeleteProduct(id);
+    }
+</script>

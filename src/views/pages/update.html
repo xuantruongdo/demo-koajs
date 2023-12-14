@@ -1,0 +1,51 @@
+<div class="container">
+    <form method="POST">
+      <div class="mb-3 d-none">
+        <label for="id" class="form-label">ID</label>
+        <input type="number" class="form-control" id="id" value="<%= productEdit.id %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" value="<%= productEdit.name %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="image" class="form-label">Image</label>
+        <input type="text" class="form-control" id="image" value="<%= productEdit.image %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price</label>
+        <input type="number" class="form-control" id="price" value="<%= productEdit.price %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <input type="text" class="form-control" id="description" value="<%= productEdit.description %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="product" class="form-label">Product</label>
+        <input type="text" class="form-control" id="product" value="<%= productEdit.product %>"/>
+      </div>
+      <div class="mb-3">
+        <label for="color" class="form-label">Color</label>
+        <input type="text" class="form-control" id="color" placeholder="#..." value="<%= productEdit.color %>"/>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="updateProduct()">
+        Save
+      </button>
+    </form>
+  </div>
+  
+  <script>
+    function updateProduct() {
+      const id = $("#id").val();
+      const name = $("#name").val();
+      const image = $("#image").val();
+      const price = $("#price").val();
+      const description = $("#description").val();
+      const product = $("#product").val();
+      const color = $("#color").val();
+      let data = { name, image, price, description, product, color}
+      
+      callUpdateProduct(id, data);
+    }
+  </script>
+  
