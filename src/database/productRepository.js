@@ -2,28 +2,29 @@ const fs = require('fs');
 const { data: products } = require('./products.json');
 const { dataFilePath } = require('../constants/constants');
 
-function getAll(page, limit, sort) {
-    let paginatedProducts = [...products]
+function getAll(params) {
+    const { page, limit, sort } = params;
+    let sortedProducts = [...products];
+
+    if (sort === 'asc') {
+        sortedProducts.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sort === 'desc') {
+        sortedProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    let paginatedProducts = sortedProducts;
+
     if (limit) {
         const endIndex = 0 + limit;
-        paginatedProducts = products.slice(0, endIndex);
+        paginatedProducts = sortedProducts.slice(0, endIndex);
     }
+
     if (page && limit) {
         const startIndex = (page - 1) * limit;
         const endIndex = startIndex + limit;
-        paginatedProducts = products.slice(startIndex, endIndex);
+        paginatedProducts = sortedProducts.slice(startIndex, endIndex);
     }
-    if (sort == 'asc') {
-        paginatedProducts.sort(function (a, b) {
-            return new Date(a.createdAt) - new Date(b.createdAt);
-        })
-    }
-    else if (sort == 'desc') {
-        paginatedProducts.sort(function (a, b) {
-            return new Date(b.createdAt) - new Date(a.createdAt);
-        })
-    }
-    
+
     return paginatedProducts;
 }
   

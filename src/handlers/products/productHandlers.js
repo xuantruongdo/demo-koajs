@@ -8,7 +8,7 @@ async function getProducts(ctx) {
     const page = parseInt(ctx.query.page);
     const limit = parseInt(ctx.query.limit);
     const sort = ctx.query.sort;
-    const products = getAllProducts(page, limit, sort);
+    const products = getAllProducts({page, limit, sort});
     
     ctx.body = {
       data: products
