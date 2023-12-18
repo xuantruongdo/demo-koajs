@@ -1,24 +1,28 @@
-const {getAll: getAllProducts, getOne: getOneProduct, add: addProduct, update, remove} = require("../../database/productRepository");
-const fs = require('fs');
+const {
+  getAll: getAllProducts,
+  getOne: getOneProduct,
+  add: addProduct,
+  update,
+  remove,
+} = require("../../database/productRepository");
+const fs = require("fs");
 const { dataFilePath } = require("../../constants/constants");
-const { generateFakeProducts } = require("../../helpers/helper");
+const { generateFakeProducts } = require("../../helpers/faker");
+const { v4: uuidv4 } = require("uuid");
 
 async function getProducts(ctx) {
   try {
-    const page = parseInt(ctx.query.page);
-    const limit = parseInt(ctx.query.limit);
-    const sort = ctx.query.sort;
-    const products = getAllProducts({page, limit, sort});
-    
+    const products = getAllProducts(ctx.query);
+
     ctx.body = {
-      data: products
+      data: products,
     };
   } catch (e) {
     ctx.status = 404;
     ctx.body = {
       success: false,
       data: [],
-      error: e.message
+      error: e.message,
     };
   }
 }
@@ -27,38 +31,37 @@ async function getProduct(ctx) {
   try {
     const { id } = ctx.params;
     const fields = ctx.query.fields;
-    const getCurrentProduct = getOneProduct(id, fields);
-    if (getCurrentProduct) {
-      return ctx.body = {
-        data: getCurrentProduct
-      }
+    const currentProduct = getOneProduct(id, fields);
+    if (currentProduct) {
+      return (ctx.body = {
+        data: currentProduct,
+      });
     }
-
   } catch (e) {
     ctx.status = 404;
-    return ctx.body = {
+    return (ctx.body = {
       success: false,
-      error: e.message
-    }
+      error: e.message,
+    });
   }
 }
 
 async function save(ctx) {
   try {
-      const postData = ctx.request.body;
-      postData.id = parseInt(postData.id)
-      postData.createdAt = new Date().toISOString();
-      addProduct(postData);
+    const postData = ctx.request.body;
+    postData.id = uuidv4();
+    postData.createdAt = new Date().toISOString();
+    addProduct(postData);
 
-      ctx.status = 201;
-      return ctx.body = {
-          success: true
-      }
+    ctx.status = 201;
+    return (ctx.body = {
+      success: true,
+    });
   } catch (e) {
-      return ctx.body = {
-          success: false,
-          error: e.message
-      }
+    return (ctx.body = {
+      success: false,
+      error: e.message,
+    });
   }
 }
 
@@ -70,65 +73,70 @@ async function updateProduct(ctx) {
     if (currentProduct) {
       const updatedProduct = {
         ...currentProduct,
-        ...updateData
+        ...updateData,
       };
 
       update(id, updatedProduct);
 
       ctx.status = 200;
-      return ctx.body = {
+      return (ctx.body = {
         success: true,
-      };
+      });
     } else {
-      throw new Error('Product Not Found with that id!');
+      throw new Error("Product Not Found with that id!");
     }
-
-    
   } catch (e) {
     ctx.status = 404;
-    return ctx.body = {
+    return (ctx.body = {
       success: false,
-      error: e.message
-    };
+      error: e.message,
+    });
   }
 }
 
 async function removeProduct(ctx) {
   try {
     const { id } = ctx.params;
-    remove(id);
-
-    ctx.status = 201;
-    return ctx.body = {
-        success: true
+    const currentProduct = getOneProduct(id);
+    if (currentProduct) {
+      remove(id);
+    } else {
+      throw new Error("Product Not Found with that id!");
     }
 
+    ctx.status = 201;
+    return (ctx.body = {
+      success: true,
+    });
   } catch (e) {
     ctx.status = 404;
-      return ctx.body = {
-          success: false,
-          error: e.message
-      }
+    return (ctx.body = {
+      success: false,
+      error: e.message,
+    });
   }
 }
 
 async function generate(ctx) {
   try {
     const products = generateFakeProducts(1000);
-    
-    fs.writeFileSync(dataFilePath, JSON.stringify({
-      data: products
-    }));
 
-      ctx.status = 201;
-      return ctx.body = {
-          success: true
-      }
+    fs.writeFileSync(
+      dataFilePath,
+      JSON.stringify({
+        data: products,
+      })
+    );
+
+    ctx.status = 201;
+    return (ctx.body = {
+      success: true,
+    });
   } catch (e) {
-      return ctx.body = {
-          success: false,
-          error: e.message
-      }
+    return (ctx.body = {
+      success: false,
+      error: e.message,
+    });
   }
 }
 
@@ -138,5 +146,5 @@ module.exports = {
   save,
   updateProduct,
   removeProduct,
-  generate
+  generate,
 };

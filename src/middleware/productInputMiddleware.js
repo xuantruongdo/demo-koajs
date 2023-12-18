@@ -4,7 +4,6 @@ async function productInputMiddleware(ctx, next) {
   try {
     const postData = ctx.request.body;
     let schema = yup.object().shape({
-      id: yup.number().positive().integer().required(),
       name: yup.string().required(),
       price: yup.number().required(),
       description: yup.string().required(),

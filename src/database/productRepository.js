@@ -1,112 +1,48 @@
 const fs = require("fs");
 const { data: products } = require("./products.json");
 const { dataFilePath } = require("../constants/constants");
+const { sortByProperty } = require("../helpers/sort");
+const { filterObjectFields } = require("../helpers/filterFields");
 
-function getAll(params) {
-  try {
-    const { page, limit, sort } = params;
-    let sortedProducts = [...products];
-
-    if (sort === "asc") {
-      sortedProducts.sort(
-        (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-      );
-    } else if (sort === "desc") {
-      sortedProducts.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
-    }
-
-    let paginatedProducts = sortedProducts;
-
-    if (limit) {
-      const endIndex = 0 + limit;
-      paginatedProducts = sortedProducts.slice(0, endIndex);
-    }
-
-    if (page && limit) {
-      const startIndex = (page - 1) * limit;
-      const endIndex = startIndex + limit;
-      paginatedProducts = sortedProducts.slice(startIndex, endIndex);
-    }
-
-    return paginatedProducts;
-  } catch (error) {
-    throw new Error(`Error fetching all products: ${error.message}`);
-  }
+function getAll({ limit = 10, sort = "asc" } = {}) {
+  let sortedProducts = sortByProperty(products, "createdAt", sort);
+  const paginatedProducts = sortedProducts.slice(0, limit);
+  return paginatedProducts;
 }
 
 function getOne(id, fields) {
-  try {
-    const product = products.find((product) => product.id === parseInt(id));
-
-    if (!product) {
-      throw new Error("Not found product with id: ", id);
-    }
+  const product = products.find((product) => product.id === id);
+  if (product) {
     if (fields) {
-      const fieldsArr = fields.split(",");
-      if (fieldsArr && Array.isArray(fieldsArr) && fieldsArr.length > 0) {
-        const filteredProduct = {};
-        fieldsArr.forEach((field) => {
-          if (product.hasOwnProperty(field)) {
-            filteredProduct[field] = product[field];
-          }
-        });
-        return filteredProduct;
-      }
+      return filterObjectFields(product, fields);
     }
-
     return product;
-  } catch (error) {
-    throw new Error(`Error fetching a product: ${error.message}`);
+  } else {
+    throw new Error("Product Not Found with that id!");
   }
 }
 
 function add(data) {
-  try {
-    const existingProduct = products.find(
-      (product) => product.id === parseInt(data.id)
-    );
-    if (existingProduct) {
-      throw new Error("Product already exist");
-    }
-    const updatedProducts = [data, ...products];
-    fs.writeFileSync(
-      dataFilePath,
-      JSON.stringify({
-        data: updatedProducts,
-      })
-    );
-  } catch (error) {
-    throw new Error(`Error updating product: ${error.message}`);
-  }
+  const updatedProducts = [data, ...products];
+  fs.writeFileSync(
+    dataFilePath,
+    JSON.stringify({
+      data: updatedProducts,
+    })
+  );
 }
 
 function update(id, updatedProduct) {
-  try {
-    const index = products.findIndex((product) => product.id === parseInt(id));
-    if (index !== -1) {
-      products[index] = updatedProduct;
-      fs.writeFileSync(dataFilePath, JSON.stringify({ data: products }));
-    }
-  } catch (error) {
-    throw new Error(`Error updating product: ${error.message}`);
+  const index = products.findIndex((product) => product.id === id);
+  if (index !== -1) {
+    products[index] = updatedProduct;
+    fs.writeFileSync(dataFilePath, JSON.stringify({ data: products }));
   }
 }
 
 function remove(id) {
-  try {
-    const existingProduct = products.find(
-      (product) => product.id === parseInt(id)
-    );
-    if (!existingProduct) {
-      throw new Error("Product Not Found with that id!");
-    }
-    let newProducts = products.filter((product) => product.id !== parseInt(id));
-    fs.writeFileSync(dataFilePath, JSON.stringify({ data: newProducts }));
-  } catch (error) {
-    throw new Error(`Error removing product: ${error.message}`);
-  }
+  const newProducts = products.filter((product) => product.id !== id);
+  fs.writeFileSync(dataFilePath, JSON.stringify({ data: newProducts }));
 }
 
 module.exports = {
