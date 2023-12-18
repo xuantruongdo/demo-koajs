@@ -18,7 +18,7 @@ function callAddProduct(data) {
 
 function callUpdateProduct(id, data){
     $.ajax({
-        url: `/api/products/${id}`,
+        url: `/api/product/${id}`,
         type: 'PUT',
         data: data,
         success: function(response) {
@@ -33,7 +33,7 @@ function callUpdateProduct(id, data){
 
 function callDeleteProduct(id){
     $.ajax({
-        url: `/api/products/${id}`,
+        url: `/api/product/${id}`,
         type: 'DELETE',
         success: function(response) {
             alert("Deleted")

@@ -34,7 +34,6 @@ async function getProduct(ctx) {
       }
     }
 
-    throw new Error('Product Not Found with that id!')
   } catch (e) {
     ctx.status = 404;
     return ctx.body = {

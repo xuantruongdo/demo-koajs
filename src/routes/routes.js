@@ -11,7 +11,7 @@ const router = new Router();
 
 // Frontend
 router.get('/products', async function (ctx) {
-  const products = getAllProducts();
+  const products = getAllProducts({ page: 1, limit: 5, sort: 'desc' });
   await ctx.render('pages/product', {products});
 });
 
@@ -33,10 +33,10 @@ router.post('/api/books', bookInputMiddleware, bookHandler.save);
 
 // products
 router.get('/api/products', productHandlers.getProducts);
-router.get('/api/products/:id', productHandlers.getProduct);
+router.get('/api/product/:id', productHandlers.getProduct);
 router.post('/api/products', productInputMiddleware, productHandlers.save);
 router.post('/api/generate', productHandlers.generate);
-router.put('/api/products/:id', productUpdateInputMiddleware, productHandlers.updateProduct);
-router.delete('/api/products/:id', productHandlers.removeProduct);
+router.put('/api/product/:id', productUpdateInputMiddleware, productHandlers.updateProduct);
+router.delete('/api/product/:id', productHandlers.removeProduct);
 
 module.exports = router;
